@@ -230,7 +230,7 @@ export default function MapView({
         dateStyle: 'medium',
         timeStyle: 'short',
       })
-      const sourceLabel = sample.fallback_used ? 'Date-indexed fallback' : 'Open-Meteo forecast'
+      const sourceLabel = sample.fallback_used ? 'Date-indexed fallback' : 'OpenWeather wind + marine fallback'
       const info = new g.InfoWindow({
         content: `<div style="color:#071521;font-family:Inter,Arial,sans-serif;line-height:1.45;min-width:245px;padding:4px 2px"><div style="font-size:15px;font-weight:800">${escapeHtml(sample.name)}</div><div style="margin:5px 0;font-weight:700;color:${color}">${sample.conditions.wave_m.toFixed(1)} m waves · ${sample.conditions.wind_ms.toFixed(1)} m/s wind</div><div style="font-size:12px;color:#475569">${escapeHtml(forecastTime)} UTC<br>${escapeHtml(sourceLabel)}</div></div>`,
       })
@@ -288,7 +288,7 @@ export default function MapView({
       <button className={showAlerts ? 'active' : ''} onClick={() => setShowAlerts(!showAlerts)}><ShieldAlert /> Alert zones</button>
       <span><Layers /> LIGHT CHART</span>
     </div>
-    {weatherEnabled && <div className={`forecastStatus ${weatherStatus}`}>
+    {weatherEnabled && <div className={`forecastStatus forecast-${weatherStatus}`}>
       <CloudSun />
       <span>
         <b>{weatherStatus === 'loading' ? 'Updating forecast…' : weatherStatus === 'error' ? 'Forecast unavailable' : forecastTimeLabel}</b>

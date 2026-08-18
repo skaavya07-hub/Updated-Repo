@@ -3,7 +3,7 @@ from datetime import datetime, timezone
 import pytest
 
 from app.models import MultiRouteRequest, Priorities, VesselParameters
-from app.routing.environment import OpenMeteoEnvironmentProvider
+from app.routing.environment import OpenWeatherEnvironmentProvider
 from app.routing.graph import edge_is_water, has_offshore_clearance
 from app.routing.multi_service import GRAPH, calculate_multi
 
@@ -35,9 +35,12 @@ def test_priority_fraction_and_percent_normalize_equally():
 
 
 def test_live_forecast_does_not_clamp_out_of_range_dates():
-    hourly = {"time": ["2026-08-19T00:00", "2026-08-19T01:00"], "wind_speed_10m": [5, 7]}
+    entries = [
+        {"dt": 1787097600, "wind": {"speed": 5, "deg": 220}},
+        {"dt": 1787108400, "wind": {"speed": 7, "deg": 230}},
+    ]
     with pytest.raises(ValueError, match="outside the available"):
-        OpenMeteoEnvironmentProvider._nearest(hourly, "wind_speed_10m", datetime(2026, 9, 1, tzinfo=timezone.utc))
+        OpenWeatherEnvironmentProvider._nearest(entries, datetime(2026, 9, 1, tzinfo=timezone.utc))
 
 
 def test_mumbai_karachi_route_bends_offshore_around_gujarat():

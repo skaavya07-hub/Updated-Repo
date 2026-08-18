@@ -51,7 +51,7 @@ export default function App() {
   return <div className="app">
     <VoyagePlanner ports={ports} stops={stops} setStops={setStops} form={form} setForm={setForm} onSubmit={submit} loading={loading} />
     <div className="command">
-      <header><div><Radio /> LIVE PLANNING ENVIRONMENT <span>Forecast fallback active</span></div><p>INDIAN OCEAN · {new Date().toUTCString().slice(5, 22)} UTC</p></header>
+      <header><div><Radio /> LIVE PLANNING ENVIRONMENT <span>{config.weatherProvider || 'Date-indexed fallback'}</span></div><p>INDIAN OCEAN · {new Date().toUTCString().slice(5, 22)} UTC</p></header>
       <ThemeToggle theme={theme} onChange={setTheme} />
       <MapView apiKey={config.googleMapsApiKey} alerts={config.alerts || []} ports={ports} stops={stops} result={result} departureTime={form.departure_time} weatherEnabled={form.use_weather} showAlerts={showAlerts} setShowAlerts={setShowAlerts} />
       {loading && <div className="loading"><div className="radar" /><b>Optimizing fuel and voyage path…</b><span>Evaluating water corridors, vessel state and forecast conditions</span></div>}

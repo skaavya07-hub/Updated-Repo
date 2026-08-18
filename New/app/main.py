@@ -26,7 +26,8 @@ def health():
 
 @app.get("/api/config")
 def config():
-    return {"googleMapsApiKey": os.getenv("GOOGLE_MAPS_API_KEY", ""), "alerts": ALERT_ZONES, "prototype": True}
+    weather_provider = "OpenWeather forecast" if os.getenv("OPENWEATHER_API_KEY", "").strip() else "Date-indexed fallback"
+    return {"googleMapsApiKey": os.getenv("GOOGLE_MAPS_API_KEY", ""), "weatherProvider": weather_provider, "alerts": ALERT_ZONES, "prototype": True}
 
 
 @app.get("/api/ports")
