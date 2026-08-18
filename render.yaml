@@ -1,0 +1,16 @@
+services:
+  - type: web
+    name: samudra-route
+    runtime: python
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn app.main:app --host 0.0.0.0 --port $PORT
+    healthCheckPath: /api/health
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.12.8
+      - key: GOOGLE_MAPS_API_KEY
+        sync: false
+      - key: OPEN_METEO_ENABLED
+        value: "true"
+      - key: OPEN_METEO_ROUTING_ENABLED
+        value: "false"
