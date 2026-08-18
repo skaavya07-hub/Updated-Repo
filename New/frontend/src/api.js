@@ -1,0 +1,2 @@
+async function request(path, options={}){const r=await fetch(path,{headers:{'Content-Type':'application/json'},...options});let data;try{data=await r.json()}catch{throw new Error(`Server returned ${r.status}`)}if(!r.ok){const detail=data.detail;throw new Error(Array.isArray(detail)?detail.map(x=>x.msg).join('; '):detail||'Routing request failed')}return data}
+export const getPorts=()=>request('/api/ports');export const getConfig=()=>request('/api/config');export const calculateRoute=(body)=>request('/api/multi-route',{method:'POST',body:JSON.stringify(body)});
