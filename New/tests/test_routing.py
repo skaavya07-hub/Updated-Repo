@@ -6,6 +6,7 @@ from app.models import MultiRouteRequest, Priorities, VesselParameters
 from app.routing.environment import OpenWeatherEnvironmentProvider
 from app.routing.graph import edge_is_water, has_offshore_clearance
 from app.routing.multi_service import GRAPH, calculate_multi
+from app.routing.safety import alert_cost
 
 
 def roomy_vessel():
@@ -28,6 +29,12 @@ def test_alert_avoidance_changes_exposure_or_distance():
     unguarded = calculate_multi(MultiRouteRequest(**base, use_alert_zones=False))
     guarded = calculate_multi(MultiRouteRequest(**base, use_alert_zones=True, alert_avoidance=1))
     assert guarded.summary.distance_nm >= unguarded.summary.distance_nm or guarded.alert_zone_exposure != unguarded.alert_zone_exposure
+
+
+def test_hormuz_lockdown_scenario_is_critical():
+    _, hits, blocked = alert_cost(26.56, 56.25)
+    assert blocked is True
+    assert any("Hormuz" in name for name in hits)
 
 
 def test_priority_fraction_and_percent_normalize_equally():
