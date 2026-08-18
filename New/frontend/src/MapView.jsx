@@ -188,7 +188,10 @@ export default function MapView({
     })
 
     if (showAlerts) {
-      alerts.filter(zone => zone.type !== 'weather').forEach(zone => {
+      alerts.filter(zone => {
+        if (zone.type !== 'weather') return true
+        return !weatherSamples.some(sample => sample.id === `zone-${zone.id}`)
+      }).forEach(zone => {
         const circle = new g.Circle({
           map,
           center: { lat: zone.center[0], lng: zone.center[1] },
@@ -199,6 +202,7 @@ export default function MapView({
           strokeOpacity: 0.7,
           strokeWeight: 1.5,
           clickable: true,
+          zIndex: zone.type === 'weather' ? 2 : 1,
         })
         const info = new g.InfoWindow({
           content: `<div style="color:#071521;font-family:Inter,Arial,sans-serif;font-size:14px;font-weight:700;line-height:1.45;min-width:240px;padding:4px 2px"><div style="font-size:15px;font-weight:800">${escapeHtml(zone.name)}</div><div style="margin-top:4px;font-weight:700;color:#334155">Prototype/demo alert data · ${escapeHtml(zone.type)}</div></div>`,
