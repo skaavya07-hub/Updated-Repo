@@ -1,6 +1,7 @@
 import math
 from dataclasses import dataclass
 
+import numpy as np
 from global_land_mask import globe
 
 
@@ -42,16 +43,26 @@ def edge_is_water(a, b, samples=None, enforce_clearance=True):
         spacing_nm = 3 if enforce_clearance else 10
         samples = max(8, math.ceil(haversine_nm(a, b) / spacing_nm))
     distance = haversine_nm(a, b)
-    for i in range(samples + 1):
-        lat = a.lat + (b.lat - a.lat) * i / samples
-        lng = a.lng + (b.lng - a.lng) * i / samples
-        if not is_water(lat, lng):
-            return False
-        # Harbour approaches may begin close to shore. Beyond 18 nm, maintain
-        # roughly 6 nm of visible clearance except inside designated straits.
-        along_nm = distance * i / samples
-        if enforce_clearance and i % 4 == 0 and min(along_nm, distance - along_nm) > 18 and not is_designated_narrow_channel(lat, lng):
-            if not has_offshore_clearance(lat, lng):
+    fractions = np.linspace(0.0, 1.0, samples + 1)
+    lats = a.lat + (b.lat - a.lat) * fractions
+    lngs = a.lng + (b.lng - a.lng) * fractions
+    if not np.all(globe.is_ocean(lats, lngs)):
+        return False
+    if enforce_clearance:
+        candidates = []
+        for i in range(0, samples + 1, 4):
+            along_nm = distance * i / samples
+            lat, lng = float(lats[i]), float(lngs[i])
+            if min(along_nm, distance - along_nm) > 18 and not is_designated_narrow_channel(lat, lng):
+                candidates.append((lat, lng))
+        if candidates:
+            clear_lats = np.asarray([p[0] for p in candidates])
+            clear_lngs = np.asarray([p[1] for p in candidates])
+            radius = 0.10
+            lon_radius = radius / np.maximum(0.25, np.cos(np.radians(clear_lats)))
+            check_lats = np.concatenate((clear_lats + radius, clear_lats - radius, clear_lats, clear_lats))
+            check_lngs = np.concatenate((clear_lngs, clear_lngs, clear_lngs + lon_radius, clear_lngs - lon_radius))
+            if not np.all(globe.is_ocean(check_lats, check_lngs)):
                 return False
     return True
 
@@ -71,7 +82,9 @@ CORRIDOR_POINTS = [
     (2.3, 101.5), (1.7, 102.3), (1.2, 103.0), (1.15, 103.3), (1.05, 103.55),
     (1.1, 103.75), (1.1, 104.2), (0, 105), (-3, 106.05), (-6.7, 108.55),
     # East Africa / Mozambique channel / south
-    (12.0, 45.0), (10.75, 46.65), (6.85, 49.3), (3, 51), (-2, 52), (-7, 52), (-12, 53), (-18, 54),
+    (12.0, 45.0), (12, 47), (13, 49), (13, 52), (14, 55), (12, 57), (9, 56),
+    (7, 52), (4, 51), (2, 50), (-1, 47), (-3, 43), (-3.5, 42), (-4, 40.2),
+    (-2, 52), (-7, 52), (-12, 53), (-18, 54),
     (-24, 52), (-30, 48), (-35, 40), (-37, 30), (-32, 33), (-25, 37), (-18, 40), (-10, 42), (-3, 44),
     # Open ocean islands and Australia northern/western/southern route
     (-5, 60), (-10, 65), (-15, 70), (-20, 75), (-25, 80), (-30, 88), (-34, 100), (-35, 112),

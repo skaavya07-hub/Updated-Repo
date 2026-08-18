@@ -1,8 +1,9 @@
 import os
+from datetime import datetime, timezone
 from pathlib import Path
 
 from dotenv import load_dotenv
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, Query
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
@@ -11,6 +12,7 @@ from app.alerts import ALERT_ZONES
 from app.models import MultiRouteRequest, RouteRequest
 from app.ports import public_ports
 from app.routing.multi_service import calculate_multi
+from app.routing.environment import EnvironmentProvider
 
 load_dotenv()
 app = FastAPI(title="Samudra Route API", version="1.0.0")
@@ -32,6 +34,29 @@ def ports():
     return public_ports()
 
 
+@app.get("/api/environment")
+def environment_preview(
+    lat: float = Query(..., ge=-90, le=90),
+    lng: float = Query(..., ge=-180, le=180),
+    at: datetime | None = None,
+    live: bool = True,
+):
+    """Preview live or fallback environmental conditions at a coordinate/time."""
+    when = at or datetime.now(timezone.utc)
+    if when.tzinfo is None:
+        when = when.replace(tzinfo=timezone.utc)
+    provider = EnvironmentProvider(allow_live=live)
+    conditions = provider.conditions(lat, lng, when, enabled=True)
+    return {
+        "latitude": lat,
+        "longitude": lng,
+        "forecast_time": when,
+        "conditions": conditions.public_dict(),
+        "live_requested": live,
+        "fallback_used": conditions.source.startswith("Deterministic"),
+    }
+
+
 @app.post("/api/multi-route")
 def multi_route(request: MultiRouteRequest):
     try:
@@ -42,7 +67,7 @@ def multi_route(request: MultiRouteRequest):
 
 @app.post("/api/route")
 def route(request: RouteRequest):
-    multi = MultiRouteRequest(ports=[request.origin, request.destination], departure_time=request.departure_time, vessel=request.vessel, priorities=request.priorities, use_weather=request.use_weather, use_alert_zones=request.use_alert_zones, alert_avoidance=request.alert_avoidance)
+    multi = MultiRouteRequest(ports=[request.origin, request.destination], departure_time=request.departure_time, vessel=request.vessel, priorities=request.priorities, use_weather=request.use_weather, use_alert_zones=request.use_alert_zones, alert_avoidance=request.alert_avoidance, prefer_alternate_route=request.prefer_alternate_route)
     try:
         return calculate_multi(multi)
     except ValueError as exc:
@@ -57,4 +82,3 @@ if DIST.exists():
     def spa(path: str):
         target = DIST / path
         return FileResponse(target if target.is_file() else DIST / "index.html", headers={"Cache-Control": "no-cache"})
-

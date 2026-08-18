@@ -66,5 +66,21 @@ The API exposes `GET /api/health`, `/api/config`, `/api/ports` and `POST /api/ro
 python -m pytest -q
 ```
 
-The environment provider is modular. Its deterministic fallback is always available; a production operator can replace the adapter with verified Open-Meteo wind/marine calls and later add Copernicus or OSCAR currents without changing routing services.
+## Weather API integration
 
+The modular provider in `app/routing/environment.py` includes a working Open-Meteo adapter for 10 m wind, wave height/direction, and ocean-current velocity/direction. Open-Meteo does not require an API key.
+
+Test a live forecast after starting the server:
+
+```powershell
+Invoke-RestMethod "http://127.0.0.1:8000/api/environment?lat=10&lng=75&live=true"
+```
+
+Configuration is documented in `.env.example`. Preview calls use live Open-Meteo data when available and report `fallback_used`. Routing defaults to the deterministic provider to stay fast and reproducible. To use live forecasts during route edge evaluation, set:
+
+```env
+OPEN_METEO_ENABLED=true
+OPEN_METEO_ROUTING_ENABLED=true
+```
+
+Restart the backend after changing `.env`. If the external API is unavailable or has no value for the requested forecast time, routing automatically uses the deterministic time-indexed fallback. To integrate another vendor, implement a class with `conditions(lat, lng, when) -> Conditions` and select it in `EnvironmentProvider`; no fuel or routing code needs to change.

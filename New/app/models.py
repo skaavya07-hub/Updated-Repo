@@ -58,6 +58,7 @@ class RouteRequest(BaseModel):
     use_weather: bool = True
     use_alert_zones: bool = True
     alert_avoidance: float = Field(0.8, ge=0, le=1)
+    prefer_alternate_route: bool = True
 
 
 class MultiRouteRequest(BaseModel):
@@ -68,6 +69,7 @@ class MultiRouteRequest(BaseModel):
     use_weather: bool = True
     use_alert_zones: bool = True
     alert_avoidance: float = Field(0.8, ge=0, le=1)
+    prefer_alternate_route: bool = True
 
     @field_validator("ports")
     @classmethod
@@ -126,4 +128,3 @@ class RouteResponse(BaseModel):
     warnings: list[str]
     environmental_source: str
     alert_zone_exposure: list[str]
-

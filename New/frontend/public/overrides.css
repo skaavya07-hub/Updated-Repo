@@ -1,0 +1,133 @@
+:root{color-scheme:light}
+body{background:#eef5f3;color:#102a2c;font-family:Inter,Arial,sans-serif}
+.app{grid-template-columns:490px 1fr;background:#eef5f3}
+.planner{background:#fff;color:#102a2c;border-right:1px solid #d5e3df;box-shadow:7px 0 24px #183c3420;scrollbar-color:#9eb6b1 transparent}
+.brand{height:214px;padding:28px 44px 24px;display:block;background:#fff;border-bottom:1px solid #d9e5e1;position:relative}
+.brandMark,.brand>i{display:none!important}
+.brand>div:nth-child(2){display:flex;flex-direction:column}
+.brand b{order:2;font:700 0/1 Space Grotesk;color:transparent;letter-spacing:-1.8px}
+.brand b:after{content:"Smarter routes.\A Lower burn.";white-space:pre;display:block;color:#102a2c;font:700 43px/1.05 Space Grotesk;letter-spacing:-2px;margin-top:18px}
+.brand b:before{content:"VOYAGE PLANNER";display:block;color:#087f77;font:700 11px/1 Inter;letter-spacing:2.2px;margin-bottom:3px}
+.brand span{order:3;color:#607874;font-size:15px;line-height:1.6;letter-spacing:0;margin-top:12px;max-width:370px}
+.brand span:after{content:" Balance fuel, arrival time and weather safety with one adaptive routing engine."}
+.planner section{padding:28px 44px;border-bottom:1px solid #dce7e4}
+.planner h2{font:700 18px Space Grotesk;color:#102a2c;gap:12px}
+.planner h2 svg{width:18px;height:18px;color:#087f77;background:#dff6ef;border-radius:8px;padding:7px;box-sizing:content-box}
+.hint{color:#78908c;font-size:11px;margin:8px 0 20px}
+.stop{grid-template-columns:28px 1fr auto;gap:10px;margin-bottom:14px}
+.stop:not(:last-child):after{left:13px;top:35px;height:42px;border-color:#9dbeb7}
+.stopNo{background:#e0f7f0;border-color:#a7ddd0;color:#087f77}
+.stop label{background:#fbfdfc;border:1px solid #cfddda;border-radius:11px;padding:9px 12px;box-shadow:0 2px 6px #214c4210}
+.stop small,.full small{color:#526c68;font-weight:700;letter-spacing:.9px}
+.stop select{color:#102a2c;font-size:13px;padding:3px 0;background:#fbfdfc}
+.stop select option{background:white;color:#102a2c}
+.stopActions button{color:#698d86}
+.add{margin-left:38px;border-color:#b8d3cd;color:#087f77;background:#f7fbfa;border-radius:8px;font-weight:600}
+.full input,.fieldGrid label>div{background:#fbfdfc;border-color:#cfddda;border-radius:10px;color:#102a2c}
+.full input{height:50px;color-scheme:light;color:#102a2c}
+.fieldGrid{gap:12px;margin-top:18px}
+.fieldGrid label small{color:#526c68;font-weight:700}
+.fieldGrid input{color:#102a2c;font-size:14px;padding:12px}
+.fieldGrid label span{color:#69837f;padding:12px 9px}
+.range>span{color:#526c68;font-weight:600}.range b{color:#087f77}.range input{accent-color:#078d82}
+.toggleRow label{color:#526c68;font-weight:600}.toggleRow label span{background:#d5e2df}.toggleRow input:checked+span{background:#078d82}
+.calculate{height:54px;margin:24px 44px;width:calc(100% - 88px);background:#087f77;border-radius:11px;box-shadow:0 10px 24px #087f7735;font-size:14px}
+.planner footer{color:#718783;padding-bottom:26px}
+.command>header{height:52px;top:22px;left:28px;right:auto;border:1px solid #d5e4e0;background:#fffffff2;color:#48635e;border-radius:12px;padding:0 16px;box-shadow:0 8px 22px #1c41382a;backdrop-filter:blur(10px)}
+.command>header div{color:#176f67;font-weight:700}.command>header p{display:none}.command>header span{color:#748985;font-weight:500}
+.mapTools{top:22px;left:auto;right:25px}.mapTools button,.mapTools span{height:40px;border-color:#d3e0dd;border-radius:10px;color:#405a55;background:#fffffff2;box-shadow:0 7px 18px #234b4220}.mapTools button.active{background:#087f77;color:white;border-color:#087f77}
+.legend{bottom:22px;left:28px;background:#fffffff0;border-color:#d5e3df;color:#516c67;box-shadow:0 8px 22px #193c3422}.legend b{color:#a45a24}
+.results{left:28px;right:28px;top:auto;bottom:22px;width:auto;max-height:46%;background:#fffffff7;color:#102a2c;border:1px solid #d5e3df;border-radius:18px;box-shadow:0 18px 50px #163b3230;backdrop-filter:blur(18px)}
+.resultsHead{padding:18px 24px;border-color:#dce7e4}.resultsHead span{color:#087f77;font-weight:700}.resultsHead h2{color:#102a2c;font-size:20px}.resultsHead button{color:#607b76}
+.metrics{padding:14px 20px;grid-template-columns:repeat(5,1fr)}
+.metrics div{border-color:#dce7e4;padding:11px 14px}.metrics svg{color:#087f77}.metrics b{color:#102a2c}.metrics small{color:#708783}
+.eta{margin:0 22px 14px;background:#eff8f5;border-color:#cde6df}.eta span{color:#64807a}.eta span b{color:#102a2c}.eta i{color:#6d8883}
+.results details{padding:0 22px 14px}.results summary{color:#087f77}.legs article{background:#f5faf8;color:#102a2c}.legs p,.legs small{color:#617b76}.warning{background:#fff7ed;border-color:#f2c89f;color:#99521d}
+.loading{background:#eff8f5e8;color:#102a2c}.loading span{color:#607b76}.radar{border-color:#80cabe;background:conic-gradient(#078d8277,transparent 25%);box-shadow:inset 0 0 20px #078d8244}
+.error{background:#fff7f7f5;color:#9f2525;border-color:#dc6363}.error span b,.error button{color:#7d1818}
+@media(max-width:1000px){.app{grid-template-columns:410px 1fr}.brand{padding-left:28px;padding-right:28px}.brand b:after{font-size:37px}.planner section{padding-left:28px;padding-right:28px}.calculate{margin-left:28px;margin-right:28px;width:calc(100% - 56px)}.metrics{grid-template-columns:repeat(3,1fr)}}
+@media(max-width:850px){.app{display:block}.brand{height:195px}.planner section{padding:22px 24px}.command{height:78vh}.results{left:10px;right:10px;bottom:10px}.command>header{left:12px}.mapTools{right:12px}.metrics{grid-template-columns:repeat(2,1fr)}}
+
+.themeToggle{position:absolute;z-index:12;top:22px;right:238px;height:40px;display:flex;align-items:center;gap:7px;padding:0 11px;border:1px solid #d3e0dd;border-radius:10px;background:#fffffff2;color:#4d6863;box-shadow:0 7px 18px #234b4220;cursor:pointer}
+.themeToggle svg{width:15px;height:15px}.themeToggle>span{position:relative;width:34px;height:18px;border-radius:10px;background:#cddbd8;transition:.25s}.themeToggle>span i{position:absolute;top:2px;left:2px;width:14px;height:14px;border-radius:50%;background:#fff;box-shadow:0 1px 4px #173d3540;transition:.25s}.themeToggle>span.dark{background:#087f77}.themeToggle>span.dark i{left:18px}
+body,.planner,.brand,.planner section,.stop label,.full input,.fieldGrid label>div,.results,.eta,.legs article,.command>header,.themeToggle{transition:background-color .25s,color .25s,border-color .25s}
+
+body.theme-dark{background:#06121b;color:#d9edf0}
+.theme-dark .app{background:#06121b}
+.theme-dark .planner{background:#081722;color:#d9edf0;border-color:#1a3946;box-shadow:7px 0 28px #0008}
+.theme-dark .brand{background:#081722;border-color:#193744}.theme-dark .brand b:after{color:#effcfd}.theme-dark .brand span{color:#82a2aa}
+.theme-dark .planner section{border-color:#193744}.theme-dark .planner h2{color:#effcfd}.theme-dark .planner h2 svg{background:#103b3c;color:#5eead4}
+.theme-dark .hint{color:#73939c}.theme-dark .stop:not(:last-child):after{border-color:#36646b}.theme-dark .stopNo{background:#10343d;border-color:#21606a;color:#67e8f9}
+.theme-dark .stop label,.theme-dark .full input,.theme-dark .fieldGrid label>div{background:#0c202d;border-color:#24424f;box-shadow:none}.theme-dark .stop select,.theme-dark .stop select option,.theme-dark .fieldGrid input,.theme-dark .full input{background:#0c202d;color:#e6f6f7;color-scheme:dark}
+.theme-dark .stop small,.theme-dark .full small,.theme-dark .fieldGrid label small,.theme-dark .range>span,.theme-dark .toggleRow label{color:#91adb4}.theme-dark .stopActions button{color:#78a1aa}.theme-dark .add{background:#0c202d;border-color:#2c5660;color:#5eead4}
+.theme-dark .fieldGrid label span{color:#7899a1}.theme-dark .toggleRow label span{background:#29434c}.theme-dark .calculate{background:linear-gradient(100deg,#078d82,#087f77);box-shadow:0 10px 25px #020c10aa}.theme-dark .planner footer{color:#6f8e96}
+.theme-dark .command>header,.theme-dark .themeToggle,.theme-dark .mapTools button,.theme-dark .mapTools span{background:#081722ee;color:#bcd2d6;border-color:#254552;box-shadow:0 8px 24px #0007}.theme-dark .command>header span{color:#7899a1}.theme-dark .themeToggle>span{background:#29434c}
+.theme-dark .mapCanvas{filter:brightness(.72) saturate(.8) contrast(1.05)}
+.theme-dark .legend{background:#081722ef;color:#b6ced2;border-color:#294a57;box-shadow:0 8px 24px #0008}
+.theme-dark .results{background:#081722f5;color:#d9edf0;border-color:#294a57;box-shadow:0 20px 60px #000a}.theme-dark .resultsHead{border-color:#203d49}.theme-dark .resultsHead h2,.theme-dark .metrics b{color:#effcfd}.theme-dark .resultsHead button{color:#91adb4}.theme-dark .metrics div{border-color:#203d49}.theme-dark .metrics small{color:#7899a1}
+.theme-dark .eta{background:#0c2931;border-color:#24505a}.theme-dark .eta span{color:#83a5ac}.theme-dark .eta span b{color:#effcfd}.theme-dark .eta i{color:#7899a1}.theme-dark .legs article{background:#0c202d;color:#d9edf0}.theme-dark .legs p,.theme-dark .legs small{color:#8da9b0}
+.theme-dark .loading{background:#05131de8;color:#effcfd}.theme-dark .loading span{color:#83a5ac}
+@media(max-width:850px){.themeToggle{right:225px}}@media(max-width:600px){.themeToggle{top:70px;right:12px}.mapTools{top:70px;right:125px}.command>header{right:12px}}
+
+/* Compact, aligned top-right control groups. */
+.themeToggle{top:20px;right:24px;height:42px;padding:4px;gap:3px;background:#fffffff4}
+.themeToggle>button{height:32px;padding:0 11px;display:flex;align-items:center;justify-content:center;gap:6px;border:0;border-radius:7px;background:transparent;color:#55706b;font:600 11px/1 Inter;cursor:pointer}
+.themeToggle>button svg{width:14px;height:14px}.themeToggle>button.active{background:#087f77;color:#fff;box-shadow:0 3px 8px #087f7735}
+.mapTools{top:70px;right:24px;left:auto;align-items:center}.mapTools button,.mapTools span{justify-content:center;white-space:nowrap;text-align:center}
+.brand,.brand>div:nth-child(2),.planner section,.planner label,.results,.resultsHead,.metrics div{text-align:left}
+.brand b:before,.brand b:after,.brand span{margin-left:0;margin-right:0}.brand span{display:block;max-width:380px}
+.stop label{display:block}.stop select{text-align:left}.fieldGrid label small{min-height:22px;align-items:flex-start;line-height:1.25}.range>span{align-items:center}.resultsHead>div{min-width:0}.resultsHead h2{justify-content:flex-start;text-align:left}.metrics b,.metrics small{line-height:1.25}
+.theme-dark .themeToggle>button{color:#9bb6bc}.theme-dark .themeToggle>button.active{background:#0d9488;color:#fff}
+@media(max-width:850px){.themeToggle{top:14px;right:12px}.mapTools{top:64px;right:12px}}
+@media(max-width:520px){.themeToggle>button span{display:none}.themeToggle>button{width:32px;padding:0}.mapTools span{display:none}}
+
+/* Keep the editorial hero copy inside its own block without section overlap. */
+.brand{height:260px;padding-top:30px;padding-bottom:30px;overflow:hidden}
+.brand b:after{margin-top:20px;line-height:1.04}
+.brand span{font-size:0!important;line-height:1.55;margin-top:16px;max-width:370px;color:transparent!important}
+.brand span:after{content:"Balance fuel, arrival time and weather safety with one adaptive routing engine.";display:block;color:#607874;font:400 14px/1.55 Inter;letter-spacing:0;text-align:left}
+.theme-dark .brand span:after{color:#82a2aa}
+@media(max-width:1000px){.brand{height:245px}.brand b:after{font-size:37px}}
+@media(max-width:850px){.brand{height:235px;padding:25px 24px}.brand b:after{font-size:35px}.brand span:after{font-size:13px}}
+
+.brand b:after{content:"Ocevia";font-size:52px;line-height:1;letter-spacing:-2px}
+.brand{height:225px}
+@media(max-width:1000px){.brand{height:215px}.brand b:after{font-size:47px}}
+@media(max-width:850px){.brand{height:205px}.brand b:after{font-size:43px}}
+
+.brand{height:255px}
+.brand b:after{content:"Samudra Route";font-size:46px;white-space:nowrap}
+.brand>div:nth-child(2):after{content:"(Sᵃᵐᵘᵈʳᵃ Rᵒᵘᵗᵉ)";order:2;display:block;margin-top:8px;color:#087f77;font:600 18px/1.2 Space Grotesk;letter-spacing:1px;text-align:left}
+.theme-dark .brand>div:nth-child(2):after{color:#5eead4}
+@media(max-width:1000px){.brand{height:245px}.brand b:after{font-size:40px}.brand>div:nth-child(2):after{font-size:16px}}
+@media(max-width:850px){.brand{height:235px}.brand b:after{font-size:36px}.brand>div:nth-child(2):after{font-size:15px}}
+
+.brand{height:225px}
+.brand b:after{content:"ֆᵃᵐᵘᵈʳᵃ Ꮢᵒᵘᵗᵉ";font-size:58px;letter-spacing:-1px}
+.brand>div:nth-child(2):after{display:none}
+@media(max-width:1000px){.brand{height:215px}.brand b:after{font-size:52px}}
+@media(max-width:850px){.brand{height:205px}.brand b:after{font-size:48px}}
+
+/* Explicit high-contrast theme endpoints. */
+body:not(.theme-dark),body:not(.theme-dark) .app{background:#eef5f3!important;color:#102a2c!important}
+body:not(.theme-dark) .planner,body:not(.theme-dark) .brand{background:#fff!important;color:#102a2c!important;border-color:#d5e3df!important}
+body:not(.theme-dark) .brand b:after,body:not(.theme-dark) .planner h2{color:#0b292b!important}
+body:not(.theme-dark) .brand b:before{color:#087f77!important}
+body:not(.theme-dark) .brand span:after{color:#5d7571!important}
+body:not(.theme-dark) .stop label,body:not(.theme-dark) .full input,body:not(.theme-dark) .fieldGrid label>div{background:#fbfdfc!important;border-color:#cbdcd8!important}
+body:not(.theme-dark) .stop select,body:not(.theme-dark) .stop select option,body:not(.theme-dark) .fieldGrid input,body:not(.theme-dark) .full input{background:#fbfdfc!important;color:#102a2c!important}
+body:not(.theme-dark) .results{background:#fffffff8!important;color:#102a2c!important}
+body:not(.theme-dark) .mapCanvas{filter:none!important}
+
+body.theme-dark,body.theme-dark .app{background:#04111a!important;color:#e8f7f8!important}
+body.theme-dark .planner,body.theme-dark .brand{background:#061722!important;color:#e8f7f8!important;border-color:#22404c!important}
+body.theme-dark .brand b:after,body.theme-dark .planner h2,body.theme-dark .resultsHead h2,body.theme-dark .metrics b{color:#f1fcfd!important;text-shadow:0 1px 1px #0005}
+body.theme-dark .brand b:before{color:#5eead4!important}
+body.theme-dark .brand span:after,body.theme-dark .hint{color:#91adb4!important}
+body.theme-dark .planner h2 svg{background:#0b4140!important;color:#72f3df!important}
+body.theme-dark .stop label,body.theme-dark .full input,body.theme-dark .fieldGrid label>div{background:#0a2230!important;border-color:#285062!important}
+body.theme-dark .stop select,body.theme-dark .stop select option,body.theme-dark .fieldGrid input,body.theme-dark .full input{background:#0a2230!important;color:#e8f7f8!important}
+body.theme-dark .stop small,body.theme-dark .full small,body.theme-dark .fieldGrid label small,body.theme-dark .range>span,body.theme-dark .toggleRow label{color:#9db8bf!important}
+body.theme-dark .results{background:#061722f8!important;color:#e8f7f8!important;border-color:#294f5d!important}
+body.theme-dark .mapCanvas{filter:brightness(.64) saturate(.72) contrast(1.12)!important}
+body.theme-dark .themeToggle>button:not(.active){color:#a8c0c5!important}

@@ -17,12 +17,12 @@ def _interpolate(a, b, max_nm=45):
     return [Point(lat=a.lat + (b.lat - a.lat) * i / count, lng=a.lng + (b.lng - a.lng) * i / count) for i in range(count)]
 
 
-def calculate_leg(graph, origin, destination, departure, fuel_start, vessel, priorities, use_weather, use_alerts, avoidance, leg_index=0):
+def calculate_leg(graph, origin, destination, departure, fuel_start, vessel, priorities, use_weather, use_alerts, avoidance, leg_index=0, prefer_alternate=True):
     env = EnvironmentProvider()
     wf, wt, ws = priorities.normalized()
     start, goal = graph.port_nodes[origin], graph.port_nodes[destination]
     exposure = set()
-    weather_max = {"wave": 0.0, "wind": 0.0}
+    weather_max = {"wave": 0.0, "wind": 0.0, "sources": set()}
     clearance_cache = {}
 
     def heuristic(node, target):
@@ -60,7 +60,27 @@ def calculate_leg(graph, origin, destination, departure, fuel_start, vessel, pri
         option, _, _, blocked = best_edge(u, v, distance)
         return float("inf") if blocked or option is None else option[0] * distance
 
-    node_path, evaluated = search(graph, start, goal, edge_cost, heuristic)
+    primary_path, evaluated = search(graph, start, goal, edge_cost, heuristic)
+    node_path = primary_path
+    alternate_selected = False
+    if prefer_alternate and len(primary_path) > 2:
+        primary_edges = set(zip(primary_path, primary_path[1:]))
+
+        def alternate_cost(u, v, distance):
+            cost = edge_cost(u, v, distance)
+            return cost * 4.0 if (u, v) in primary_edges else cost
+
+        try:
+            candidate, alternate_evaluated = search(graph, start, goal, alternate_cost, heuristic)
+            evaluated += alternate_evaluated
+            primary_distance = sum(haversine_nm(graph.nodes[a], graph.nodes[b]) for a, b in zip(primary_path, primary_path[1:]))
+            candidate_distance = sum(haversine_nm(graph.nodes[a], graph.nodes[b]) for a, b in zip(candidate, candidate[1:]))
+            changed_edges = set(zip(candidate, candidate[1:])) - primary_edges
+            if changed_edges and candidate_distance <= primary_distance * 1.5:
+                node_path = candidate
+                alternate_selected = True
+        except ValueError:
+            pass
     current_fuel, current_time = fuel_start, departure
     total_distance = total_fuel = total_hours = 0.0
     safety_weighted = 0.0
@@ -80,10 +100,11 @@ def calculate_leg(graph, origin, destination, departure, fuel_start, vessel, pri
         total_distance += distance; total_fuel += perf.fuel_t; total_hours += perf.hours
         weather_max["wave"] = max(weather_max["wave"], conditions.wave_m)
         weather_max["wind"] = max(weather_max["wind"], conditions.wind_ms)
+        weather_max["sources"].add(conditions.source)
         exposure.update(hits)
         risk = min(1, conditions.wave_m / vessel.max_wave_height_m * .5 + conditions.wind_ms / vessel.max_wind_speed_ms * .3 + len(hits) * .12)
         safety_weighted += (100 * (1 - risk)) * distance
         points.extend(_interpolate(a, b))
     points.append(Point(lat=graph.nodes[goal].lat, lng=graph.nodes[goal].lng))
     summary = LegSummary(origin=origin, destination=destination, distance_nm=round(total_distance, 1), fuel_consumed_t=round(total_fuel, 2), voyage_hours=round(total_hours, 2), average_speed_kn=round(total_distance / total_hours, 2), safety_score=round(safety_weighted / total_distance, 1), fuel_remaining_t=round(current_fuel, 2), arrival_eta=current_time)
-    return LegResult(origin=origin, destination=destination, color=COLORS[leg_index % len(COLORS)], route=points, summary=summary), evaluated, exposure, weather_max
+    return LegResult(origin=origin, destination=destination, color=COLORS[leg_index % len(COLORS)], route=points, summary=summary), evaluated, exposure, weather_max, alternate_selected
