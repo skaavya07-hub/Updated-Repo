@@ -5,5 +5,11 @@
       "includeFiles": "New/frontend/dist/**",
       "excludeFiles": "{New/tests/**,New/frontend/src/**,New/frontend/node_modules/**,New/.pytest_cache/**}"
     }
-  }
+  },
+  "rewrites": [
+    {
+      "source": "/(.*)",
+      "destination": "/api/index"
+    }
+  ]
 }
