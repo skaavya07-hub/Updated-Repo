@@ -1,0 +1,9 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "functions": {
+    "index.py": {
+      "includeFiles": "New/frontend/dist/**",
+      "excludeFiles": "{New/tests/**,New/frontend/src/**,New/frontend/node_modules/**,New/.pytest_cache/**}"
+    }
+  }
+}
