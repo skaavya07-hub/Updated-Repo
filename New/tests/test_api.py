@@ -12,6 +12,15 @@ def test_health_config_and_ports():
     assert len(client.get("/api/ports").json()) >= 60
 
 
+def test_environment_preview_changes_with_selected_time():
+    common = {"lat": 15, "lng": 88, "live": "false"}
+    first = client.get("/api/environment", params={**common, "at": "2026-08-19T00:00:00Z"})
+    second = client.get("/api/environment", params={**common, "at": "2026-08-20T12:00:00Z"})
+    assert first.status_code == second.status_code == 200
+    assert first.json()["forecast_time"] != second.json()["forecast_time"]
+    assert first.json()["conditions"] != second.json()["conditions"]
+
+
 def test_multi_route_validation_and_success():
     bad = client.post("/api/multi-route", json={"ports": ["INBOM", "INBOM"]})
     assert bad.status_code == 422
@@ -24,4 +33,3 @@ def test_multi_route_validation_and_success():
 def test_vessel_validation():
     response = client.post("/api/multi-route", json={"ports": ["INBOM", "LKCMB"], "vessel": {"fuel_onboard_t": 4000, "fuel_capacity_t": 3000}})
     assert response.status_code == 422
-

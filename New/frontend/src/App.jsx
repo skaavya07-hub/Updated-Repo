@@ -53,7 +53,7 @@ export default function App() {
     <div className="command">
       <header><div><Radio /> LIVE PLANNING ENVIRONMENT <span>Forecast fallback active</span></div><p>INDIAN OCEAN · {new Date().toUTCString().slice(5, 22)} UTC</p></header>
       <ThemeToggle theme={theme} onChange={setTheme} />
-      <MapView apiKey={config.googleMapsApiKey} alerts={config.alerts || []} ports={ports} stops={stops} result={result} showAlerts={showAlerts} setShowAlerts={setShowAlerts} />
+      <MapView apiKey={config.googleMapsApiKey} alerts={config.alerts || []} ports={ports} stops={stops} result={result} departureTime={form.departure_time} weatherEnabled={form.use_weather} showAlerts={showAlerts} setShowAlerts={setShowAlerts} />
       {loading && <div className="loading"><div className="radar" /><b>Optimizing fuel and voyage path…</b><span>Evaluating water corridors, vessel state and forecast conditions</span></div>}
       {error && <div className="error"><AlertTriangle /><span><b>Unable to calculate voyage</b>{error}</span><button onClick={() => setError('')}>×</button></div>}
       <Results result={result} onClose={() => setResult(null)} />

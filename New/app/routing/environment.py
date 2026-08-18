@@ -4,7 +4,7 @@ import os
 import threading
 import time
 from dataclasses import asdict, dataclass
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 
 # pyrefly: ignore [missing-import]
 import httpx
@@ -59,6 +59,8 @@ class OpenMeteoEnvironmentProvider:
             raise ValueError(f"Open-Meteo response omitted {variable}")
         target = when.astimezone(timezone.utc).replace(tzinfo=None)
         parsed = [datetime.fromisoformat(value) for value in times]
+        if target < parsed[0] or target > parsed[-1]:
+            raise ValueError("Requested time is outside the available Open-Meteo forecast window")
         index = min(range(len(parsed)), key=lambda i: abs((parsed[i] - target).total_seconds()))
         value = values[index]
         if value is None:
@@ -116,7 +118,10 @@ class EnvironmentProvider:
         self.fallback = DeterministicEnvironmentProvider()
 
     def conditions(self, lat: float, lng: float, when: datetime, enabled=True) -> Conditions:
-        if enabled and self.allow_live:
+        when_utc = when.replace(tzinfo=timezone.utc) if when.tzinfo is None else when.astimezone(timezone.utc)
+        forecast_start = datetime.now(timezone.utc).replace(hour=0, minute=0, second=0, microsecond=0)
+        live_window = forecast_start <= when_utc < forecast_start + timedelta(days=16)
+        if enabled and self.allow_live and live_window:
             try:
                 return self.live.conditions(lat, lng, when)
             except (httpx.HTTPError, ValueError, TypeError, KeyError):

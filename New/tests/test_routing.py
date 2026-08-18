@@ -1,6 +1,9 @@
 from datetime import datetime, timezone
 
+import pytest
+
 from app.models import MultiRouteRequest, Priorities, VesselParameters
+from app.routing.environment import OpenMeteoEnvironmentProvider
 from app.routing.graph import edge_is_water, has_offshore_clearance
 from app.routing.multi_service import GRAPH, calculate_multi
 
@@ -29,6 +32,12 @@ def test_alert_avoidance_changes_exposure_or_distance():
 
 def test_priority_fraction_and_percent_normalize_equally():
     assert Priorities(fuel=.5, time=.3, safety=.2).normalized() == Priorities(fuel=50, time=30, safety=20).normalized()
+
+
+def test_live_forecast_does_not_clamp_out_of_range_dates():
+    hourly = {"time": ["2026-08-19T00:00", "2026-08-19T01:00"], "wind_speed_10m": [5, 7]}
+    with pytest.raises(ValueError, match="outside the available"):
+        OpenMeteoEnvironmentProvider._nearest(hourly, "wind_speed_10m", datetime(2026, 9, 1, tzinfo=timezone.utc))
 
 
 def test_mumbai_karachi_route_bends_offshore_around_gujarat():
