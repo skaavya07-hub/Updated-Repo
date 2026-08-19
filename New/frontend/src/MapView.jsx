@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
-import { CloudSun, Layers, Map as MapIcon, ShieldAlert } from 'lucide-react'
+import { CloudSun, Layers, Map as MapIcon, ShieldAlert, Ship, Volume2, VolumeX } from 'lucide-react'
 import { getEnvironment } from './api'
 
 const zoneColor = { conflict: '#ef4444', piracy: '#f97316', restricted: '#eab308', weather: '#f59e0b' }
@@ -18,6 +18,31 @@ const weatherColor = conditions => {
   if (severity >= 0.5) return '#f59e0b'
   return '#0891b2'
 }
+
+const segmentDistance = (a, b) => {
+  const toRadians = value => value * Math.PI / 180
+  const latitudeDelta = toRadians(b.lat - a.lat)
+  const longitudeDelta = toRadians((((b.lng - a.lng) + 540) % 360) - 180)
+  const latitudeA = toRadians(a.lat)
+  const latitudeB = toRadians(b.lat)
+  const haversine = Math.sin(latitudeDelta / 2) ** 2
+    + Math.cos(latitudeA) * Math.cos(latitudeB) * Math.sin(longitudeDelta / 2) ** 2
+  const boundedHaversine = Math.min(1, Math.max(0, haversine))
+  return 3440.065 * 2 * Math.atan2(Math.sqrt(boundedHaversine), Math.sqrt(1 - boundedHaversine))
+}
+
+const segmentBearing = (a, b) => {
+  const toRadians = value => value * Math.PI / 180
+  const latitudeA = toRadians(a.lat)
+  const latitudeB = toRadians(b.lat)
+  const longitudeDelta = toRadians((((b.lng - a.lng) + 540) % 360) - 180)
+  const y = Math.sin(longitudeDelta) * Math.cos(latitudeB)
+  const x = Math.cos(latitudeA) * Math.sin(latitudeB)
+    - Math.sin(latitudeA) * Math.cos(latitudeB) * Math.cos(longitudeDelta)
+  return (Math.atan2(y, x) * 180 / Math.PI + 360) % 360
+}
+
+const SHIP_SYMBOL_PATH = 'M 0 -17 L 8 -5 L 7 9 L 3 14 L 0 17 L -3 14 L -7 9 L -8 -5 Z'
 
 const forecastLocations = (alerts, ports, stops, result) => {
   const weatherZones = alerts
@@ -69,10 +94,15 @@ export default function MapView({
   weatherEnabled,
   showAlerts,
   setShowAlerts,
+  soundEnabled,
+  audioBlocked,
+  onToggleSound,
 }) {
   const el = useRef()
   const mapRef = useRef()
   const overlays = useRef([])
+  const shipMarkerRef = useRef()
+  const shipFrameRef = useRef()
   const [state, setState] = useState(apiKey ? 'loading' : 'nokey')
   const [weatherSamples, setWeatherSamples] = useState([])
   const [weatherStatus, setWeatherStatus] = useState(weatherEnabled ? 'loading' : 'disabled')
@@ -274,6 +304,86 @@ export default function MapView({
     }
   }, [alerts, ports, result, showAlerts, state, stops, weatherSamples])
 
+  useEffect(() => {
+    if (shipFrameRef.current) window.cancelAnimationFrame(shipFrameRef.current)
+    shipMarkerRef.current?.setMap(null)
+    shipFrameRef.current = undefined
+    shipMarkerRef.current = undefined
+
+    if (state !== 'ready' || !mapRef.current || !result?.combined_route?.length) return
+    const g = window.google.maps
+    const path = result.combined_route
+      .map(point => ({ lat: Number(point.lat), lng: Number(point.lng) }))
+      .filter(point => Number.isFinite(point.lat) && Number.isFinite(point.lng))
+
+    const segments = []
+    let totalDistance = 0
+    for (let index = 0; index < path.length - 1; index += 1) {
+      const distance = segmentDistance(path[index], path[index + 1])
+      if (distance <= 0) continue
+      segments.push({ start: path[index], end: path[index + 1], distance, offset: totalDistance })
+      totalDistance += distance
+    }
+    if (!segments.length || totalDistance <= 0) return
+
+    const icon = rotation => ({
+      path: SHIP_SYMBOL_PATH,
+      fillColor: '#f97316',
+      fillOpacity: 1,
+      strokeColor: '#ffffff',
+      strokeOpacity: 1,
+      strokeWeight: 2.4,
+      scale: 1.15,
+      rotation,
+      anchor: new g.Point(0, 0),
+    })
+    const marker = new g.Marker({
+      map: mapRef.current,
+      position: segments[0].start,
+      icon: icon(segmentBearing(segments[0].start, segments[0].end)),
+      title: 'Ship underway on the optimized route',
+      zIndex: 1000,
+      optimized: true,
+    })
+    shipMarkerRef.current = marker
+
+    const travelDuration = Math.min(42000, Math.max(18000, totalDistance * 7))
+    const destinationPause = 1400
+    const cycleDuration = travelDuration + destinationPause
+    let activeElapsed = 0
+    let previousFrame
+    let activeSegment
+    const animate = timestamp => {
+      if (shipMarkerRef.current !== marker) return
+      if (previousFrame !== undefined) activeElapsed += Math.min(100, Math.max(0, timestamp - previousFrame))
+      previousFrame = timestamp
+      const elapsed = activeElapsed % cycleDuration
+      const progress = Math.min(elapsed, travelDuration) / travelDuration
+      const targetDistance = progress * totalDistance
+      const segment = segments.find(candidate => targetDistance <= candidate.offset + candidate.distance) || segments.at(-1)
+      const segmentProgress = Math.min(1, Math.max(0, (targetDistance - segment.offset) / segment.distance))
+      const longitudeDelta = (((segment.end.lng - segment.start.lng) + 540) % 360) - 180
+      const longitude = ((segment.start.lng + longitudeDelta * segmentProgress + 540) % 360) - 180
+      marker.setPosition({
+        lat: segment.start.lat + (segment.end.lat - segment.start.lat) * segmentProgress,
+        lng: longitude,
+      })
+      if (activeSegment !== segment) {
+        marker.setIcon(icon(segmentBearing(segment.start, segment.end)))
+        activeSegment = segment
+      }
+      shipFrameRef.current = window.requestAnimationFrame(animate)
+    }
+    shipFrameRef.current = window.requestAnimationFrame(animate)
+
+    return () => {
+      if (shipFrameRef.current) window.cancelAnimationFrame(shipFrameRef.current)
+      marker.setMap(null)
+      if (shipMarkerRef.current === marker) shipMarkerRef.current = undefined
+      shipFrameRef.current = undefined
+    }
+  }, [result, state])
+
   const forecastTimeLabel = departureTime && !Number.isNaN(new Date(departureTime).getTime())
     ? new Date(departureTime).toLocaleString('en-GB', { dateStyle: 'medium', timeStyle: 'short' })
     : 'Select a valid departure time'
@@ -290,8 +400,10 @@ export default function MapView({
     </div>}
     <div className="mapTools">
       <button className={showAlerts ? 'active' : ''} onClick={() => setShowAlerts(!showAlerts)}><ShieldAlert /> Alert zones</button>
+      <button className={`${soundEnabled ? 'active' : ''} ${audioBlocked ? 'attention' : ''}`} onClick={onToggleSound} aria-pressed={soundEnabled}>{soundEnabled ? <Volume2 /> : <VolumeX />}{audioBlocked ? 'Enable sound' : soundEnabled ? 'Voyage sound' : 'Sound off'}</button>
       <span><Layers /> LIGHT CHART</span>
     </div>
+    {result && state === 'ready' && <div className="voyageMotion"><Ship /><span><b>Ship underway</b><small>Following the optimized sea route</small></span></div>}
     {weatherEnabled && <div className={`forecastStatus forecast-${weatherStatus}`}>
       <CloudSun />
       <span>
