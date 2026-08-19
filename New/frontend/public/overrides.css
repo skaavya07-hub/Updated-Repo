@@ -157,13 +157,17 @@ body.theme-dark .shipTypeField>select{background:#0a2230;color:#e8f7f8;border-co
 body.theme-dark .shipTypeField>em{color:#91adb4}
 
 /* Branded identity: supplied logo to the left of the product name. */
-.brand{display:grid!important;grid-template-columns:118px minmax(0,1fr);align-items:center;column-gap:18px;padding:22px 30px!important}
-.brand .brandMark{display:grid!important;place-items:center;width:118px;height:118px;margin:0;background:transparent;border-radius:0;box-shadow:none}
+.brand{display:flex!important;align-items:center!important;gap:18px;height:190px!important;min-height:190px!important;padding:22px 28px!important;overflow:hidden!important}
+.brand .brandMark{display:grid!important;place-items:center;flex:0 0 124px;width:124px;height:124px;margin:0;background:transparent;border-radius:0;box-shadow:none}
 .brand .brandMark img{display:block;width:100%;height:100%;object-fit:contain;filter:drop-shadow(0 9px 14px #0b5b8128)}
-.brand>div:nth-child(2){min-width:0}
-.brand b:after{font-size:38px;line-height:1.08;letter-spacing:-.6px;white-space:nowrap}
-.brand span:after{font-size:12px;line-height:1.5}
+.brand .brandText{display:flex!important;flex:1 1 auto;min-width:0;flex-direction:column;align-items:flex-start;justify-content:center;text-align:left}
+.brand .brandEyebrow{display:block;color:#087f77;font:700 10px/1.2 Inter;letter-spacing:2px;margin:0 0 10px}
+.brand .brandName{display:block;color:#0b292b!important;font:700 34px/1.08 Space Grotesk,Inter,sans-serif!important;letter-spacing:-.6px!important;white-space:nowrap}
+.brand .brandTagline{display:block!important;max-width:270px;margin:10px 0 0!important;color:#5d7571!important;font:500 11px/1.45 Inter!important;letter-spacing:0!important;text-align:left}
+.brand .brandName:before,.brand .brandName:after,.brand .brandTagline:after,.brand>div:nth-child(2):after{content:none!important;display:none!important}
 body.theme-dark .brand .brandMark img{filter:drop-shadow(0 10px 16px #05b8e530)}
+body.theme-dark .brand .brandName{color:#f1fcfd!important;text-shadow:0 1px 1px #0005}
+body.theme-dark .brand .brandEyebrow{color:#5eead4}body.theme-dark .brand .brandTagline{color:#91adb4!important}
 
 /* Moving-voyage feedback and sound control. */
 .mapTools button.attention{background:#c2410c!important;border-color:#fb923c!important;color:#fff!important;animation:soundAttention 1.4s ease-in-out infinite}
@@ -172,6 +176,6 @@ body.theme-dark .brand .brandMark img{filter:drop-shadow(0 10px 16px #05b8e530)}
 .voyageMotion b,.voyageMotion small{display:block}.voyageMotion b{font:700 11px/1.3 Space Grotesk}.voyageMotion small{margin-top:2px;color:#607b76;font-size:9px}
 body.theme-dark .voyageMotion{background:#081722ef;color:#e8f7f8;border-color:#294a57;box-shadow:0 8px 24px #0008}body.theme-dark .voyageMotion small{color:#91adb4}
 @keyframes soundAttention{50%{box-shadow:0 0 0 4px #fb923c35}}
-@media(max-width:1000px){.brand{grid-template-columns:96px minmax(0,1fr);column-gap:14px;padding-left:24px!important;padding-right:24px!important}.brand .brandMark{width:96px;height:96px}.brand b:after{font-size:32px}.brand span:after{font-size:11px}}
-@media(max-width:850px){.brand{grid-template-columns:104px minmax(0,1fr);height:205px}.brand .brandMark{width:104px;height:104px}.brand b:after{font-size:35px}}
-@media(max-width:520px){.brand{grid-template-columns:82px minmax(0,1fr);column-gap:12px;height:185px;padding:16px!important}.brand .brandMark{width:82px;height:82px}.brand b:after{font-size:28px}.voyageMotion{top:164px;left:12px}.mapTools button{padding-left:8px;padding-right:8px}}
+@media(max-width:1000px){.brand{gap:14px;height:175px!important;min-height:175px!important;padding-left:22px!important;padding-right:22px!important}.brand .brandMark{flex-basis:104px;width:104px;height:104px}.brand .brandName{font-size:28px!important}.brand .brandTagline{font-size:10px!important}}
+@media(max-width:850px){.brand{height:180px!important;min-height:180px!important}.brand .brandMark{flex-basis:108px;width:108px;height:108px}.brand .brandName{font-size:32px!important}}
+@media(max-width:520px){.brand{gap:11px;height:155px!important;min-height:155px!important;padding:14px!important}.brand .brandMark{flex-basis:82px;width:82px;height:82px}.brand .brandName{font-size:25px!important}.brand .brandEyebrow{font-size:8px;margin-bottom:7px}.brand .brandTagline{font-size:9px!important;margin-top:7px!important}.voyageMotion{top:164px;left:12px}.mapTools button{padding-left:8px;padding-right:8px}}

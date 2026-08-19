@@ -64,8 +64,11 @@ export default function VoyagePlanner({
   return <aside className="planner">
     <div className="brand">
       <div className="brandMark"><img src={brandLogo} alt="Samudra Route logo" /></div>
-      <div><b>SAMUDRA ROUTE</b><span>Maritime intelligence</span></div>
-      <i>PROTOTYPE</i>
+      <div className="brandText">
+        <small className="brandEyebrow">VOYAGE PLANNER</small>
+        <b className="brandName">ֆᵃᵐᵘᵈʳᵃ Ꮢᵒᵘᵗᵉ</b>
+        <span className="brandTagline">Maritime intelligence for safer, smarter voyages</span>
+      </div>
     </div>
     <form onSubmit={onSubmit}>
       <section>
