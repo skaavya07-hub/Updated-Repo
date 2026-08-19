@@ -10,6 +10,10 @@ def test_health_config_and_ports():
     assert client.get("/api/health").status_code == 200
     assert "googleMapsApiKey" in client.get("/api/config").json()
     assert len(client.get("/api/ports").json()) >= 60
+    bootstrap = client.get("/api/bootstrap")
+    assert bootstrap.status_code == 200
+    assert "googleMapsApiKey" in bootstrap.json()
+    assert len(bootstrap.json()["ports"]) >= 60
 
 
 def test_environment_preview_changes_with_selected_time():

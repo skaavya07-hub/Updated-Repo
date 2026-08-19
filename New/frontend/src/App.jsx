@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { AlertTriangle, Radio } from 'lucide-react'
-import { calculateRoute, getConfig, getPorts } from './api'
+import { calculateRoute, getBootstrap } from './api'
 import MapView from './MapView'
 import Results from './Results'
 import ThemeToggle from './ThemeToggle'
@@ -35,7 +35,7 @@ export default function App() {
   }, [theme])
 
   useEffect(() => {
-    Promise.all([getPorts(), getConfig()]).then(([loadedPorts, loadedConfig]) => {
+    getBootstrap().then(({ ports: loadedPorts, ...loadedConfig }) => {
       setPorts(loadedPorts); setConfig(loadedConfig)
     }).catch(requestError => setError(requestError.message))
   }, [])
