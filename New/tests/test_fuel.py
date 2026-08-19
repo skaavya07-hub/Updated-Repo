@@ -16,3 +16,10 @@ def test_assisting_current_reduces_fuel_for_distance():
     opposed = segment_performance(100, 14, -1, 0, 0, 2000, vessel)
     assert assisted.fuel_t < opposed.fuel_t
 
+
+def test_ship_resistance_profile_changes_fuel_estimate():
+    vessel = VesselParameters()
+    container = segment_performance(100, 14, 0, 0, 0, 2000, vessel, resistance_multiplier=0.98)
+    bulk_carrier = segment_performance(100, 14, 0, 0, 0, 2000, vessel, resistance_multiplier=1.08)
+    assert container and bulk_carrier
+    assert bulk_carrier.fuel_t > container.fuel_t

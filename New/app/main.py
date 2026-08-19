@@ -12,6 +12,7 @@ from app.alerts import ALERT_ZONES
 from app.models import MultiRouteRequest, RouteRequest
 from app.ports import public_ports
 from app.routing.environment import EnvironmentProvider
+from app.routing.ship_profiles import public_ship_profiles
 
 load_dotenv()
 app = FastAPI(title="Samudra Route API", version="1.0.0")
@@ -30,7 +31,7 @@ def config():
 
 def config_payload():
     weather_provider = "OpenWeather forecast" if os.getenv("OPENWEATHER_API_KEY", "").strip() else "Date-indexed fallback"
-    return {"googleMapsApiKey": os.getenv("GOOGLE_MAPS_API_KEY", ""), "weatherProvider": weather_provider, "alerts": ALERT_ZONES, "prototype": True}
+    return {"googleMapsApiKey": os.getenv("GOOGLE_MAPS_API_KEY", ""), "weatherProvider": weather_provider, "alerts": ALERT_ZONES, "shipProfiles": public_ship_profiles(), "prototype": True}
 
 
 @app.get("/api/ports")

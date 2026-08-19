@@ -13,7 +13,7 @@ const localDate = () => {
 
 const initial = {
   departure_time: localDate(),
-  vessel: { fuel_onboard_t: 2500, fuel_capacity_t: 3200, fuel_reserve_percent: 15, displacement_ex_fuel_t: 38000, reference_displacement_t: 40000, actual_draft_m: 10.5, design_draft_m: 12, service_speed_kn: 16, engine_mcr_kw: 12000, normal_engine_load_percent: 75, sfoc_g_kwh: 175, propulsion_efficiency_percent: 70, max_wave_height_m: 6, max_wind_speed_ms: 25 },
+  vessel: { ship_type: 'container', fuel_onboard_t: 2500, fuel_capacity_t: 3200, fuel_reserve_percent: 15, displacement_ex_fuel_t: 38000, reference_displacement_t: 40000, actual_draft_m: 10.5, design_draft_m: 12, service_speed_kn: 16, engine_mcr_kw: 12000, normal_engine_load_percent: 75, sfoc_g_kwh: 175, propulsion_efficiency_percent: 70, max_wave_height_m: 6, max_wind_speed_ms: 25 },
   priorities: { fuel: 50, time: 30, safety: 20 },
   use_weather: true, use_alert_zones: true, alert_avoidance: .8, prefer_alternate_route: true,
 }
@@ -49,7 +49,7 @@ export default function App() {
   }
 
   return <div className="app">
-    <VoyagePlanner ports={ports} stops={stops} setStops={setStops} form={form} setForm={setForm} onSubmit={submit} loading={loading} />
+    <VoyagePlanner ports={ports} stops={stops} setStops={setStops} form={form} setForm={setForm} shipProfiles={config.shipProfiles || []} onSubmit={submit} loading={loading} />
     <div className="command">
       <header><div><Radio /> LIVE PLANNING ENVIRONMENT <span>{config.weatherProvider || 'Date-indexed fallback'}</span></div><p>INDIAN OCEAN · {new Date().toUTCString().slice(5, 22)} UTC</p></header>
       <ThemeToggle theme={theme} onChange={setTheme} />

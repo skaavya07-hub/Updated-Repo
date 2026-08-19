@@ -11,6 +11,7 @@ A production-oriented hackathon decision-support prototype for continuous multi-
 - One internal bidirectional heuristic search engine with priorities expressed only as edge-cost weights
 - Sampled ocean-only graph edges plus detailed Malacca, Hormuz and Bab-el-Mandeb corridors
 - Cubic speed-to-power model, engine limits and tank-dependent displacement
+- Seven selectable ship profiles that tune speed, fuel resistance, weather limits and route-safety weighting
 - Directional wind, wave and current effects with deterministic, time-indexed fallback data
 - Prototype conflict, piracy, restriction and severe-weather overlays with soft and hard avoidance
 - Light Google map, numbered ports, outlined coloured legs and direction arrows
