@@ -25,6 +25,7 @@ class Priorities(BaseModel):
 
 
 class VesselParameters(BaseModel):
+    ship_type: Literal["general_cargo", "container", "bulk_carrier", "tanker", "lng_carrier", "roro", "passenger"] = "container"
     fuel_onboard_t: float = Field(2500, gt=0)
     fuel_capacity_t: float = Field(3200, gt=0)
     fuel_reserve_percent: float = Field(15, ge=0, lt=100)
@@ -122,6 +123,8 @@ class TotalSummary(BaseModel):
 
 
 class RouteResponse(BaseModel):
+    ship_type: str
+    ship_profile: str
     combined_route: list[Point]
     legs: list[LegResult]
     summary: TotalSummary

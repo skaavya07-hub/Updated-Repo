@@ -1,8 +1,12 @@
 from datetime import datetime, timezone
 
+import pytest
+
 from app.models import MultiRouteRequest, Priorities, VesselParameters
+from app.routing.environment import OpenWeatherEnvironmentProvider
 from app.routing.graph import edge_is_water, has_offshore_clearance
 from app.routing.multi_service import GRAPH, calculate_multi
+from app.routing.safety import alert_cost
 
 
 def roomy_vessel():
@@ -27,8 +31,23 @@ def test_alert_avoidance_changes_exposure_or_distance():
     assert guarded.summary.distance_nm >= unguarded.summary.distance_nm or guarded.alert_zone_exposure != unguarded.alert_zone_exposure
 
 
+def test_hormuz_lockdown_scenario_is_critical():
+    _, hits, blocked = alert_cost(26.56, 56.25)
+    assert blocked is True
+    assert any("Hormuz" in name for name in hits)
+
+
 def test_priority_fraction_and_percent_normalize_equally():
     assert Priorities(fuel=.5, time=.3, safety=.2).normalized() == Priorities(fuel=50, time=30, safety=20).normalized()
+
+
+def test_live_forecast_does_not_clamp_out_of_range_dates():
+    entries = [
+        {"dt": 1787097600, "wind": {"speed": 5, "deg": 220}},
+        {"dt": 1787108400, "wind": {"speed": 7, "deg": 230}},
+    ]
+    with pytest.raises(ValueError, match="outside the available"):
+        OpenWeatherEnvironmentProvider._nearest(entries, datetime(2026, 9, 1, tzinfo=timezone.utc))
 
 
 def test_mumbai_karachi_route_bends_offshore_around_gujarat():

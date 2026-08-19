@@ -4,12 +4,14 @@ from app.models import RouteResponse, TotalSummary
 from app.ports import PORT_BY_CODE, public_ports
 from app.routing.graph import MaritimeGraph
 from app.routing.service import calculate_leg
+from app.routing.ship_profiles import get_ship_profile
 
 GRAPH = MaritimeGraph(public_ports())
 
 
 def calculate_multi(request):
     started = time.perf_counter()
+    profile = get_ship_profile(request.vessel.ship_type)
     unknown = [p for p in request.ports if p not in PORT_BY_CODE]
     if unknown:
         raise ValueError(f"Unknown port code: {unknown[0]}")
@@ -37,6 +39,7 @@ def calculate_multi(request):
             warnings.append(f"Alternate water route selected for leg(s): {', '.join(map(str, alternate_legs))}.")
         else:
             warnings.append("No suitable alternate water route was available; the primary optimized route was used.")
+    warnings.append(f"{profile.label} routing profile applied — {profile.description}")
     warnings.append("Decision-support prototype only — not certified navigation software.")
     summary = TotalSummary(distance_nm=round(distance, 1), voyage_hours=round(hours, 2), fuel_consumed_t=round(consumed, 2), fuel_remaining_t=round(fuel, 2), average_speed_kn=round(distance / hours, 2), co2_emissions_t=round(consumed * 3.114, 2), safety_score=round(safety, 1), max_wave_height_m=round(max_wave, 2), max_wind_speed_ms=round(max_wind, 2), arrival_eta=departure, cells_evaluated=cells, computation_ms=round((time.perf_counter() - started) * 1000, 1), voyage_legs=len(legs), route_points=len(combined))
-    return RouteResponse(combined_route=combined, legs=legs, summary=summary, warnings=warnings, environmental_source="; ".join(sorted(environmental_sources)) or "Weather routing disabled", alert_zone_exposure=sorted(exposure))
+    return RouteResponse(ship_type=profile.key, ship_profile=profile.label, combined_route=combined, legs=legs, summary=summary, warnings=warnings, environmental_source="; ".join(sorted(environmental_sources)) or "Weather routing disabled", alert_zone_exposure=sorted(exposure))

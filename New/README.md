@@ -11,6 +11,7 @@ A production-oriented hackathon decision-support prototype for continuous multi-
 - One internal bidirectional heuristic search engine with priorities expressed only as edge-cost weights
 - Sampled ocean-only graph edges plus detailed Malacca, Hormuz and Bab-el-Mandeb corridors
 - Cubic speed-to-power model, engine limits and tank-dependent displacement
+- Seven selectable ship profiles that tune speed, fuel resistance, weather limits and route-safety weighting
 - Directional wind, wave and current effects with deterministic, time-indexed fallback data
 - Prototype conflict, piracy, restriction and severe-weather overlays with soft and hard avoidance
 - Light Google map, numbered ports, outlined coloured legs and direction arrows
@@ -68,7 +69,7 @@ python -m pytest -q
 
 ## Weather API integration
 
-The modular provider in `app/routing/environment.py` includes a working Open-Meteo adapter for 10 m wind, wave height/direction, and ocean-current velocity/direction. Open-Meteo does not require an API key.
+The modular provider in `app/routing/environment.py` uses OpenWeather's 5-day / 3-hour forecast for live wind speed and direction. Because that endpoint does not provide marine wave or current fields, those values use the deterministic time-indexed marine model and are labelled accordingly.
 
 Test a live forecast after starting the server:
 
@@ -76,11 +77,12 @@ Test a live forecast after starting the server:
 Invoke-RestMethod "http://127.0.0.1:8000/api/environment?lat=10&lng=75&live=true"
 ```
 
-Configuration is documented in `.env.example`. Preview calls use live Open-Meteo data when available and report `fallback_used`. Routing defaults to the deterministic provider to stay fast and reproducible. To use live forecasts during route edge evaluation, set:
+Configuration is documented in `.env.example`. Create an OpenWeather key and configure it only on the backend:
 
 ```env
-OPEN_METEO_ENABLED=true
-OPEN_METEO_ROUTING_ENABLED=true
+OPENWEATHER_API_KEY=your_server_side_key
+OPENWEATHER_ENABLED=true
+OPENWEATHER_ROUTING_ENABLED=true
 ```
 
-Restart the backend after changing `.env`. If the external API is unavailable or has no value for the requested forecast time, routing automatically uses the deterministic time-indexed fallback. To integrate another vendor, implement a class with `conditions(lat, lng, when) -> Conditions` and select it in `EnvironmentProvider`; no fuel or routing code needs to change.
+Restart the backend after changing `.env`. OpenWeather's forecast is available in 3-hour steps for 5 days. If the key is missing, the API is unavailable, or the requested time is outside that range, routing automatically uses the deterministic time-indexed fallback. Never put the OpenWeather key in React code or commit it to Git.
